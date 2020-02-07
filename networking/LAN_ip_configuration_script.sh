@@ -1,5 +1,12 @@
 #!/bin/bash
 
+####################################################################
+#                                                                  #
+#  Purpose:  To setup the network connections for Lan computers    #
+#            that are protected from WAN via the Firewall Computer #
+#                                                                  #
+####################################################################
+
 #Lan Computer's Configuration
 LanComputerInterface=en8
 LanComputerIP=192.168.10.2
