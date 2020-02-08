@@ -12,18 +12,18 @@
 
 ##### NETWORK INTERFACES ####
 #Outside Interface
-WAN_INTERFACE="eno1"
-WAN_ADDRESS="192.168.1.13"
-WAN_CHANGE_IP=0
+WAN_INTERFACE="enp0s20f0u2"
+WAN_ADDRESS="192.168.1.130"
+WAN_CHANGE_IP=1
 
 #Computer Interface
 LOCAL_INTERFACE="lo"
 LOCAL_ADDRESS="127.0.0.1"
 
 #Internal LAN Interface
-LAN_INTERFACE="eno2"
+LAN_INTERFACE="enp0s20f0u3u3"
 LAN_ADDRESS="192.168.10.2"
-LAN_CHANGE_IP=0
+LAN_CHANGE_IP=1
 
 #Seperate Admin Port
 ADMIN_INTERFACE=""
@@ -80,13 +80,16 @@ iptables -t mangle -X
 iptables -t nat -P PREROUTING ACCEPT
 iptables -t mangle -P PREROUTING ACCEPT
 iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -t nat -P OUTPUT ACCEPT
 iptables -t mangle -P OUTPUT ACCEPT
 iptables -t nat -P POSTROUTING ACCEPT
 iptables -t mangle -P POSTROUTING ACCEPT
 
+if [  $1 == "clear"  ]
+then
+	exit
+fi
 
 #############################################
 #        SETUP PREPROCESSING CHAINS         #
@@ -210,7 +213,13 @@ iptables -A OUTPUT -p ALL -s $LOCAL_ADDRESS -j ACCEPT
 iptables -A OUTPUT -p ALL -o $LOCAL_INTERFACE -j ACCEPT
 iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
 iptables -A OUTPUT -p udp --dport 68 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A OUTPUT -p udp --dport 67 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A OUTPUT -p udp --dport 43 -m conntrack --ctstate NEW -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A OUTPUT -p tdp --dport 68 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A OUTPUT -p tdp --dport 67 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A OUTPUT -p tdp --dport 43 -m conntrack --ctstate NEW -j ACCEPT
+
 
 iptables -A OUTPUT -p tcp --dport 22 -d 0/0 -j ess-acct  
 iptables -A OUTPUT -p tcp --sport 22 -d 0/0 -j ess-acct  

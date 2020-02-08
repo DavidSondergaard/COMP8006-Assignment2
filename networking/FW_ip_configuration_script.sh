@@ -96,3 +96,48 @@ fi
 #172.16.20.1     waterways.bcit8006-pts20-assign2.com     waterways planet3-if2 
 #ADMIN HOST INTERFACE
 #172.16.20.2     sharkbait.bcit8006-pts20-assign2.com     sharkbait
+
+###
+# THIS PRINTS THE NAMESERVERS OF THE FIREWALL COMPUTER
+#
+# nmcli -o | grep servers | awk '{print $2}'
+
+# TO ADD ANOTHER DNS
+
+# nmcli -t con | grep enp0s20f0u2 | awk -F ":" '{print $1}'
+
+##### val1=`(jmcli -t con show | grep enp | awk -F ":" '{ print $1}')`; nmcli con modify $val1 +ipv4.dns "1.2.3.6"
+
+
+# nmcli con modify "Wired connection 2" +ipv4.dns "192.168.1.254"
+
+# nmcli con down "Wired connection 2"
+# nmcli con up "Wired connection 2"
+###
+
+
+
+
+
+# sudo iptables -t nat -A POSTROUTING -o enp0s20f0u2 -j MASQUERADE
+# sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+# sudo iptables -A FORWARD -i enp0s20f0u3u3 -o enp0s20f0u2 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+# sudo iptables -A FORWARD -i enp0s20f0u2 -o enp0s20f0u3u3 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+
+
+
+
+
+###OUTSIDE OF NETOWRK!!!
+
+# TO ACCESS INSIDE OF NETOWRK FROM OUTSIDE, YOIU NEED TO SETUP FORWARDING FROM OUTSIDE TO INSIDE. 
+# THEN, YOU ALSO NEED TO SETUP THE ROUTING TABLES ON THE WAN COMPUTER TO RECOGNIZE THAT THE
+# SUBNET IS ACCESSED FROM THE FW WAN SIDE INTERFACE
+
+# SO ON THE COMPUTER THAT IS ON THE WAN, ENTER:  
+
+#route add -net 192.168.10.0/24
+#route add -net 192.168.10.0/24 dev eth0
+#route add -net 192.168.10.0/24 via 192.168.1.130 dev eth0
+#route add -net 192.168.10.0/24 gw 192.168.1.130
