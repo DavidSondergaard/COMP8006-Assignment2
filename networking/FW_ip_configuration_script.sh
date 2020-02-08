@@ -15,6 +15,7 @@ Lan1Host2InterfaceIP=192.168.10.2
 Lan1DefaultGateway=192.168.10.1
 Lan1SubnetIP=192.168.10.0
 Lan1SubnetMask=255.255.255.0
+Lan1SubnetIPwithSubnet=$Lan1SubnetIP/24
 
 Lan1Host3InterfaceIP=UNASSIGNED
 
@@ -50,23 +51,37 @@ if [  "$1" = "firewall"  ]
     then
         #CLEAR rules
             echo "setting lan1 config because $1 was passed"
-            ip route flush dev $Lan1Host2InterfaceName
+            ip route flush dev $Lan1Host2InterfaceName   ##1
         #SET outbound interface
-            ifconfig $Lan1Host2InterfaceName $Lan1Host2IP up
-        #ENABLE IP forwarding between interfaces
-            ip route add $Lan1DefaultGateway dev $Lan1Host2InterfaceName
+            echo "setting $1 interface $Lan1Host2InterfaceName 's IP to $Lan1Host2InterfaceIP"
+            ifconfig $Lan1Host2InterfaceName $Lan1Host2InterfaceIP up   ##2
         #SEND TRAFFIC TO FIREWALL IF NO VALID MATCH
-            ip route add default via $Lan1DefaultGateway
-        #SEND TRAFFIC TO FIREWALL FIRST IF REQUEST IS FOR A COMPUTER IN THIS SUBNET
-            ip route add $Lan1SubnetIP netmask $FWLan1SubnetMask via $Lan1DefaultGateway dev $Lan1Host2InterfaceName
-            route add $Lan1SubnetIP netmask $FWLan1SubnetMask via $Lan1DefaultGateway $Lan1Host2InterfaceName
+            echo "adding default route via $Lan1DefaultGateway to $1"
+            route add default gw $Lan1DefaultGateway ##3
+            echo "adding routing through firewall for all traffic to $1 part B"   ##6
+            #route add -net $Lan1SubnetIP via $Lan1DefaultGateway dev $Lan1Host2InterfaceName
     else
         #error
         echo "$1 is not a valid match.  Please try again."
 fi
 
 
-
+        ##CLEAR rules
+        #    echo "setting lan1 config because $1 was passed"
+        #    ip route flush dev $Lan1Host2InterfaceName   ##1
+        ##SET outbound interface
+        #    echo "setting $1 interface IP to  $Lan1Host2IP"
+        #    ifconfig wlol down
+        #    ifconfig $Lan1Host2InterfaceName $Lan1Host2IP up   ##2
+        ##SEND TRAFFIC TO FIREWALL IF NO VALID MATCH
+        #    echo "adding default route via $Lan1DefaultGateway to $1"
+        #    ip route add default via $Lan1DefaultGateway   ##4
+        ##SEND TRAFFIC TO FIREWALL FIRST IF REQUEST IS FOR A COMPUTER IN THIS SUBNET
+        #    echo "adding routing through firewall for all traffic to $1 part A"
+        #    ip route add default gw via $Lan1DefaultGateway dev $Lan1Host2InterfaceName   ##5
+        #    echo "adding routing through firewall for all traffic to $1 part B"   ##6
+        #    route add $Lan1SubnetIP via $Lan1DefaultGateway dev $Lan1Host2InterfaceName
+   
 
 
 ###################################################################
