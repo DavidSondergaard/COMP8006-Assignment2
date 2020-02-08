@@ -52,10 +52,13 @@ if [  "$1" = "firewall"  ]
             echo "setting lan1 config because $1 was passed"
             ip route flush dev $Lan1Host2InterfaceName
         #SET outbound interface
+            echo "setting A"
             ifconfig $Lan1Host2InterfaceName $Lan1Host2InterfaceIP up
         #ENABLE IP forwarding between interfaces
+            echo "setting B"
             ip route add $Lan1DefaultGateway dev $Lan1Host2InterfaceName
         #SEND TRAFFIC TO FIREWALL IF NO VALID MATCH
+            echo "setting C"
             route add default gw $Lan1DefaultGateway
         #SEND TRAFFIC TO FIREWALL FIRST IF REQUEST IS FOR A COMPUTER IN THIS SUBNET
     else
